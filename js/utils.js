@@ -20,19 +20,14 @@ const getRandomArrayItems = (items,itemQuantity,deleteFromOriginal) => {
   itemQuantity=Math.abs(itemQuantity);
   const itemsRemaining = items.slice();
   const deleteFromArray = () => {
-    let arrayToDeleteFrom;
-    if (deleteFromOriginal) {
-      arrayToDeleteFrom = items;
-    } else {
-      arrayToDeleteFrom = itemsRemaining;
-    }
+    const arrayToDeleteFrom =  deleteFromOriginal?items:itemsRemaining;
     const itemSeed = getRandomInteger(0,arrayToDeleteFrom.length-1);
     const currentItem = arrayToDeleteFrom[itemSeed];
     arrayToDeleteFrom.splice(itemSeed,1);
     return currentItem;
   };
   if (itemQuantity === 1) {
-    return deleteFromArray();
+    return [deleteFromArray()];
   }
   const data = new Array(itemQuantity).fill(null).map(deleteFromArray);
   return data;
