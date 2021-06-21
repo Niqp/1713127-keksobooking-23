@@ -6,7 +6,7 @@ const PRICE_PER_TYPE = {
   'house': 5000,
   'bungalow': 0,
   'hotel': 3000,
-}
+};
 
 const ROOMS_CAPACITY = {
   1: [1],
