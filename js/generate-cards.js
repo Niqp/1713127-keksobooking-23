@@ -34,7 +34,6 @@ const replacePhotos = (place,item) => {
 
 const replaceFeatures = (place,item) => {
   const featureClasses = item.map((feature) => `popup__feature--${feature}`);
-  const cardFeatures = place.querySelectorAll('.popup__feature');
   const featureBlock = place.querySelector('.popup__features');
   featureBlock.textContent = '';
   if (featureClasses.length === 0) {
@@ -42,11 +41,10 @@ const replaceFeatures = (place,item) => {
     return;
   }
   featureClasses.forEach((featureClass) => {
-    cardFeatures.forEach((feature) => {
-      if (feature.classList.contains(featureClass)) {
-        featureBlock.appendChild(feature);
-      }
-    });
+    const feature = document.createElement('li');
+    feature.classList.add('popup__feature');
+    feature.classList.add(featureClass);
+    featureBlock.appendChild(feature);
   });
 };
 
