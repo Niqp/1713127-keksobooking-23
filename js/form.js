@@ -19,4 +19,4 @@ const formToggle = (status) => {
   });
 };
 
-export {formToggle};
+export {formToggle,adForm};
