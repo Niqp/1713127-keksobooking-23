@@ -70,18 +70,8 @@ const generateCards = (data) => {
   return cards;
 };
 
-const appendCards = (cards) => {
-  const placeToAppend = document.querySelector('#map-canvas');
-  if (cards.length === undefined) {
-    placeToAppend.appendChild(cards);
-    return;
-  }
-  cards.forEach((value) => {
-    placeToAppend.appendChild(value);
-  });
-};
-
 const generatedCards = generateCards(generatedData);
-appendCards(generatedCards[0]);
+
+export {generatedData,generatedCards};
 
 
