@@ -1,4 +1,5 @@
-import { generateRandomData } from './generate-random-data.js';
+import { createFetch, showAlert } from './utils.js';
+
 const FLAT_TYPES_TEXT = {
   palace : 'Дворец',
   flat : 'Квартира',
@@ -6,14 +7,15 @@ const FLAT_TYPES_TEXT = {
   bungalow: 'Бунгало',
   hotel: 'Отель',
 };
-const generatedData = generateRandomData();
+
+const CARDS_SERVER = 'https://23.javascript.pages.academy/keksobooking/data';
 
 const replaceText = (place,selector,data) => {
   const currentPlace = place.querySelector(selector);
   if (data) {
     currentPlace.textContent = data;
   } else {
-    currentPlace.classList.add('.hidden');
+    currentPlace.remove;
   }
 };
 
@@ -21,7 +23,7 @@ const replacePhotos = (place,item) => {
   const photos = place.querySelector('.popup__photos');
   const photo = place.querySelector('.popup__photo');
   photo.remove();
-  if (item.length === 0) {
+  if (!item) {
     photos.remove();
     return;
   }
@@ -33,13 +35,13 @@ const replacePhotos = (place,item) => {
 };
 
 const replaceFeatures = (place,item) => {
-  const featureClasses = item.map((feature) => `popup__feature--${feature}`);
   const featureBlock = place.querySelector('.popup__features');
-  featureBlock.textContent = '';
-  if (featureClasses.length === 0) {
+  if (!item) {
     featureBlock.remove();
     return;
   }
+  const featureClasses = item.map((feature) => `popup__feature--${feature}`);
+  featureBlock.textContent = '';
   featureClasses.forEach((featureClass) => {
     const feature = document.createElement('li');
     feature.classList.add('popup__feature');
@@ -63,15 +65,22 @@ const generateCards = (data) => {
     replacePhotos(card,item.offer.photos);
     replaceFeatures(card,item.offer.features);
     const avatar = card.querySelector('.popup__avatar');
-    avatar.src = `${item.author.avatar}.png`;
-
+    avatar.src = item.author.avatar;
     return card;
   });
   return cards;
 };
 
-const generatedCards = generateCards(generatedData);
+const generatedData = () =>
+  createFetch(CARDS_SERVER)
+    .then((cards) => {
+      const generatedCards = generateCards(cards);
+      return { cards,generatedCards };
+    })
+    .catch(() => {
+      showAlert('Ошибка загрузки обьявлений с сервера!');
+    });
 
-export {generatedData,generatedCards};
+export {generatedData};
 
 

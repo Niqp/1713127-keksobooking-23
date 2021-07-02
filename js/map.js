@@ -1,11 +1,6 @@
-import {generatedData,generatedCards} from './generate-cards.js';
-import {adForm} from './form.js';
-import {formToggle} from './form.js';
+import {generatedData} from './generate-cards.js';
+import {DEFAULT_LOCATION, formToggle, appendAddressToForm as onMainPinMove }  from './form.js';
 
-const DEFAULT_LOCATION = {
-  lat: 35.6895,
-  lng: 139.692,
-};
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
   anchor: [26, 52],
@@ -22,9 +17,6 @@ const DEFAULT_MAP = {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   zoom: 10,
 };
-const DEFAULT_FIXED_POINT = 5;
-
-const formAddress = adForm.querySelector('#address');
 
 const loadMap = () => {
   formToggle(false);
@@ -48,13 +40,6 @@ const loadMap = () => {
 
 const map = loadMap();
 
-const appendAddressToForm = (evt) => {
-  const latLng = evt.target.getLatLng();
-  const lat = latLng.lat.toFixed(DEFAULT_FIXED_POINT);
-  const lng = latLng.lng.toFixed(DEFAULT_FIXED_POINT);
-  formAddress.value = `${lat}, ${lng}`;
-};
-
 const createMainPin = () => {
   const mainPinIcon = L.icon({
     iconUrl: DEFAULT_MAIN_PIN.icon,
@@ -75,12 +60,12 @@ const createMainPin = () => {
 
   mainPinMarker.addTo(map);
 
-  mainPinMarker.on('moveend', appendAddressToForm);
+  mainPinMarker.on('moveend', onMainPinMove);
 };
 
 const markerGroup = L.layerGroup().addTo(map);
 
-const createPin = (point,index) => {
+const createPin = (point,index,generatedCards) => {
   const {lat, lng} = point.location;
   const icon = L.icon({
     iconUrl: DEFAULT_PIN.icon,
@@ -106,13 +91,14 @@ const createPin = (point,index) => {
     );
 };
 
-const generatePins = (data) => {
-  data.forEach((element,index) => {
-    createPin(element,index);
+const generatePins = ({cards, generatedCards}) => {
+  cards.forEach((element,index) => {
+    createPin(element,index, generatedCards);
   });
 };
 
+
 createMainPin();
-generatePins(generatedData);
 
 
+generatedData().then(generatePins);
