@@ -48,9 +48,6 @@ const createSend = (link,body) => fetch(
   link,
   {
     method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
     body,
   },
 )
@@ -74,16 +71,32 @@ const showAlert = (message) => {
   alertContainer.style.backgroundColor = 'red';
   alertContainer.style.transition = 'all 0.5s';
   alertContainer.style.transform = 'translateY(-100%)';
-
   alertContainer.textContent = message;
-
   document.body.append(alertContainer);
+
   setTimeout(() => {alertContainer.style.transform = 'translateY(0)';},ALERT_ANIMATION_DELAY);
   setTimeout(() => {
     alertContainer.style.transform = 'translateY(-100%)';
     setTimeout(() => {alertContainer.remove();},ALERT_ANIMATION_DELAY);
-
   }, ALERT_SHOW_TIME);
 };
 
-export {getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArrayQuantity, getRandomArrayItems, createFetch, createSend, showAlert};
+const onMessageClose = (messageToClose,form) => {
+  const closeMessage = (document,evt,message) => {
+    message.remove();
+    document.removeEventListener(evt,closeMessage);
+  };
+  if (form) {
+    form.reset();
+  }
+  document.addEventListener('keydown',(evt) => {
+    if (evt.key === 'Escape') {
+      closeMessage(document,'keydown',messageToClose);
+    }
+  });
+  document.body.addEventListener('click',() => {
+    closeMessage(document.body,'click',messageToClose);
+  });
+};
+
+export { getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArrayQuantity, getRandomArrayItems, createFetch, createSend, showAlert, onMessageClose };

@@ -1,5 +1,5 @@
-import {generatedData} from './generate-cards.js';
-import {DEFAULT_LOCATION, formToggle, appendAddressToForm as onMainPinMove }  from './form.js';
+import { generatedData } from './generate-cards.js';
+import { DEFAULT_LOCATION, formToggle, appendAddressToForm as onMainPinMove }  from './form.js';
 
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
@@ -39,6 +39,7 @@ const loadMap = () => {
 };
 
 const map = loadMap();
+let mainPinMarker;
 
 const createMainPin = () => {
   const mainPinIcon = L.icon({
@@ -47,7 +48,7 @@ const createMainPin = () => {
     iconAnchor: DEFAULT_MAIN_PIN.anchor,
   });
 
-  const mainPinMarker = L.marker(
+  mainPinMarker = L.marker(
     {
       lat: DEFAULT_LOCATION.lat,
       lng: DEFAULT_LOCATION.lng,
@@ -97,8 +98,12 @@ const generatePins = ({cards, generatedCards}) => {
   });
 };
 
+const resetMainPin = () => {
+  mainPinMarker.setLatLng(DEFAULT_LOCATION);
+};
+
 
 createMainPin();
-
-
 generatedData().then(generatePins);
+
+export { resetMainPin };

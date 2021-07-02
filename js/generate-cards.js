@@ -81,6 +81,6 @@ const generatedData = () =>
       showAlert('Ошибка загрузки обьявлений с сервера!');
     });
 
-export {generatedData};
+export { generatedData };
 
 

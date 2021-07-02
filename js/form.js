@@ -1,11 +1,9 @@
-import { createSend } from './utils.js';
-
 const DEFAULT_FIXED_POINT = 5;
 const DEFAULT_LOCATION = {
   lat: 35.6895,
   lng: 139.692,
 };
-const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
+
 
 const adForm = document.querySelector('.ad-form');
 const adFormElements = adForm.querySelectorAll('.ad-form__element');
@@ -13,9 +11,7 @@ const mapFilters = document.querySelector('.map__filters');
 const mapFilterElements = mapFilters.querySelectorAll('.map__filter');
 const mapFeatures = mapFilters.querySelectorAll('.map__features');
 const formAddress = adForm.querySelector('#address');
-const formReset = adForm.querySelector('.ad-form__reset');
-const successTemplate = document.querySelector('#success').content;
-const errorTemplate = document.querySelector('#error').content;
+
 
 const formToggle = (status) => {
   status = !status;
@@ -46,36 +42,4 @@ const appendAddressToForm = (evt) => {
   formAddress.value = `${lat}, ${lng}`;
 };
 
-formReset.addEventListener('click',() => {
-  adForm.reset();
-  appendAddressToForm();
-});
-
-const buttonReset = (form,button,message) => {
-  form.reset();
-  appendAddressToForm();
-  button.removeEventListener('click',buttonReset);
-  message.remove();
-};
-
-adForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  const formData = new FormData(adForm);
-  createSend(FORM_SERVER,formData)
-    .then(() => {
-      const message = successTemplate.cloneNode(true);
-      document.body.append(message);
-    })
-    .catch (() => {
-      const message = errorTemplate.cloneNode(true);
-      const errorButton = message.querySelector('.error__button');
-      document.body.append(message);
-      errorButton.addEventListener('click',() => {
-        buttonReset(adForm,errorButton,message);
-      });
-    });
-});
-
-
-appendAddressToForm();
-export {formToggle,appendAddressToForm,adForm,DEFAULT_LOCATION};
+export { formToggle, appendAddressToForm, adForm, DEFAULT_LOCATION };
