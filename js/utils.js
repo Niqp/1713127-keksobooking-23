@@ -84,7 +84,7 @@ const showAlert = (message) => {
 const closeMessage = (messageToClose,form) => {
   const onClose = () => {
     messageToClose.remove();
-    document.removeEventListener('keydown',onClose);
+    document.removeEventListener('keydown',onKeyPress);
     document.body.removeEventListener('click',onClose);
   };
   const onKeyPress = (evt) => {

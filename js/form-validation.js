@@ -2,7 +2,7 @@ import { adForm } from './form.js';
 import { createSend, closeMessage } from './utils.js';
 import { resetMainPin } from './map.js';
 
-const FORM_SERVER = 'https://23.javascript.pages.academy/keksobookingы';
+const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
 
 const PRICE_PER_TYPE = {
   'palace': 10000,
