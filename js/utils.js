@@ -82,12 +82,13 @@ const showAlert = (message) => {
 };
 
 const closeMessage = (messageToClose,form) => {
+  let onKeyPress = null;
   const onClose = () => {
     messageToClose.remove();
     document.removeEventListener('keydown',onKeyPress);
     document.body.removeEventListener('click',onClose);
   };
-  const onKeyPress = (evt) => {
+  onKeyPress = (evt) => {
     if (evt.key === 'Escape') {
       onClose();
     }
