@@ -1,4 +1,8 @@
-import {adForm} from './form.js';
+import { adForm } from './form.js';
+import { createSend, closeMessage } from './utils.js';
+import { resetMainPin } from './map.js';
+
+const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
 
 const PRICE_PER_TYPE = {
   'palace': 10000,
@@ -14,6 +18,10 @@ const ROOMS_CAPACITY = {
   3: [1,2,3],
   100: [0],
 };
+
+const resetButton = document.querySelector('.ad-form__reset');
+const successTemplate = document.querySelector('#success').content;
+const errorTemplate = document.querySelector('#error').content;
 
 const rooms = adForm.querySelector('#room_number');
 const capacity = adForm.querySelector('#capacity');
@@ -56,3 +64,26 @@ timeout.addEventListener('change', () => setSameValue(timeout,timein));
 setOptionsValidity(capacityOptions,ROOMS_CAPACITY[rooms.value],capacity);
 rooms.addEventListener('change', () => setOptionsValidity(capacityOptions,ROOMS_CAPACITY[rooms.value],capacity));
 capacity.addEventListener('change', () => checkOptionsValidity(capacity,ROOMS_CAPACITY[rooms.value]));
+
+resetButton.addEventListener('click',() => {
+  resetMainPin();
+});
+
+adForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  const formData = new FormData(adForm);
+  createSend(FORM_SERVER,formData)
+    .then(() => {
+      let message = successTemplate.cloneNode(true);
+      document.body.append(message);
+      message = document.querySelector('.success');
+      resetMainPin();
+      closeMessage(message,adForm);
+    })
+    .catch (() => {
+      let message = errorTemplate.cloneNode(true);
+      document.body.append(message);
+      message = document.querySelector('.error');
+      closeMessage(message);
+    });
+});

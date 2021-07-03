@@ -1,11 +1,6 @@
-import {generatedData,generatedCards} from './generate-cards.js';
-import {adForm} from './form.js';
-import {formToggle} from './form.js';
+import { fetchCards } from './generate-cards.js';
+import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove }  from './form.js';
 
-const DEFAULT_LOCATION = {
-  lat: 35.6895,
-  lng: 139.692,
-};
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
   anchor: [26, 52],
@@ -22,12 +17,10 @@ const DEFAULT_MAP = {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   zoom: 10,
 };
-const DEFAULT_FIXED_POINT = 5;
-
-const formAddress = adForm.querySelector('#address');
 
 const loadMap = () => {
   formToggle(false);
+  filterToggle(false);
   const createMap = L.map(DEFAULT_MAP.id)
     .on('load', () => {
       formToggle(true);
@@ -47,13 +40,7 @@ const loadMap = () => {
 };
 
 const map = loadMap();
-
-const appendAddressToForm = (evt) => {
-  const latLng = evt.target.getLatLng();
-  const lat = latLng.lat.toFixed(DEFAULT_FIXED_POINT);
-  const lng = latLng.lng.toFixed(DEFAULT_FIXED_POINT);
-  formAddress.value = `${lat}, ${lng}`;
-};
+let mainPinMarker;
 
 const createMainPin = () => {
   const mainPinIcon = L.icon({
@@ -62,7 +49,7 @@ const createMainPin = () => {
     iconAnchor: DEFAULT_MAIN_PIN.anchor,
   });
 
-  const mainPinMarker = L.marker(
+  mainPinMarker = L.marker(
     {
       lat: DEFAULT_LOCATION.lat,
       lng: DEFAULT_LOCATION.lng,
@@ -75,12 +62,12 @@ const createMainPin = () => {
 
   mainPinMarker.addTo(map);
 
-  mainPinMarker.on('moveend', appendAddressToForm);
+  mainPinMarker.on('moveend', onMainPinMove);
 };
 
 const markerGroup = L.layerGroup().addTo(map);
 
-const createPin = (point,index) => {
+const createPin = (point,index,generatedCards) => {
   const {lat, lng} = point.location;
   const icon = L.icon({
     iconUrl: DEFAULT_PIN.icon,
@@ -106,13 +93,19 @@ const createPin = (point,index) => {
     );
 };
 
-const generatePins = (data) => {
-  data.forEach((element,index) => {
-    createPin(element,index);
+const generatePins = ({cards, generatedCards}) => {
+  filterToggle(true);
+  cards.forEach((element,index) => {
+    createPin(element,index, generatedCards);
   });
 };
 
+const resetMainPin = () => {
+  mainPinMarker.setLatLng(DEFAULT_LOCATION);
+};
+
+
 createMainPin();
-generatePins(generatedData);
+fetchCards().then(generatePins);
 
-
+export { resetMainPin };
