@@ -19,6 +19,10 @@ const formToggle = (status) => {
   adFormElements.forEach((element) => {
     element.disabled = status;
   });
+};
+
+const filterToggle = (status) => {
+  status = !status;
   mapFilters.classList.toggle('map__filters--disabled',status);
   mapFilterElements.forEach((element) => {
     element.disabled = status;
@@ -42,4 +46,4 @@ const appendAddressToForm = (evt) => {
   formAddress.value = `${lat}, ${lng}`;
 };
 
-export { formToggle, appendAddressToForm, adForm, DEFAULT_LOCATION };
+export { formToggle, filterToggle, appendAddressToForm, adForm, DEFAULT_LOCATION };

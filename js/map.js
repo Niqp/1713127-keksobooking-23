@@ -1,5 +1,5 @@
-import { generatedData } from './generate-cards.js';
-import { DEFAULT_LOCATION, formToggle, appendAddressToForm as onMainPinMove }  from './form.js';
+import { fetchCards } from './generate-cards.js';
+import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove }  from './form.js';
 
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
@@ -20,6 +20,7 @@ const DEFAULT_MAP = {
 
 const loadMap = () => {
   formToggle(false);
+  filterToggle(false);
   const createMap = L.map(DEFAULT_MAP.id)
     .on('load', () => {
       formToggle(true);
@@ -93,6 +94,7 @@ const createPin = (point,index,generatedCards) => {
 };
 
 const generatePins = ({cards, generatedCards}) => {
+  filterToggle(true);
   cards.forEach((element,index) => {
     createPin(element,index, generatedCards);
   });
@@ -104,6 +106,6 @@ const resetMainPin = () => {
 
 
 createMainPin();
-generatedData().then(generatePins);
+fetchCards().then(generatePins);
 
 export { resetMainPin };

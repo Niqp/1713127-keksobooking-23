@@ -71,16 +71,18 @@ const generateCards = (data) => {
   return cards;
 };
 
-const generatedData = () =>
+const fetchCards = () =>
   createFetch(CARDS_SERVER)
     .then((cards) => {
       const generatedCards = generateCards(cards);
       return { cards,generatedCards };
     })
     .catch(() => {
-      showAlert('Ошибка загрузки обьявлений с сервера!');
+      const errorText = 'Ошибка загрузки обьявлений с сервера!';
+      showAlert(errorText);
+      throw new Error(errorText);
     });
 
-export { generatedData };
+export { fetchCards };
 
 

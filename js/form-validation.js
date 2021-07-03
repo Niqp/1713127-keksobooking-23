@@ -1,8 +1,8 @@
 import { adForm } from './form.js';
-import { createSend, onMessageClose } from './utils.js';
+import { createSend, closeMessage } from './utils.js';
 import { resetMainPin } from './map.js';
 
-const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
+const FORM_SERVER = 'https://23.javascript.pages.academy/keksobookingы';
 
 const PRICE_PER_TYPE = {
   'palace': 10000,
@@ -78,12 +78,12 @@ adForm.addEventListener('submit', (evt) => {
       document.body.append(message);
       message = document.querySelector('.success');
       resetMainPin();
-      onMessageClose(message,adForm);
+      closeMessage(message,adForm);
     })
     .catch (() => {
       let message = errorTemplate.cloneNode(true);
       document.body.append(message);
       message = document.querySelector('.error');
-      onMessageClose(message);
+      closeMessage(message);
     });
 });

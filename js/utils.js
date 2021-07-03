@@ -81,22 +81,22 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
-const onMessageClose = (messageToClose,form) => {
-  const closeMessage = (document,evt,message) => {
-    message.remove();
-    document.removeEventListener(evt,closeMessage);
+const closeMessage = (messageToClose,form) => {
+  const onClose = () => {
+    messageToClose.remove();
+    document.removeEventListener('keydown',onClose);
+    document.body.removeEventListener('click',onClose);
+  };
+  const onKeyPress = (evt) => {
+    if (evt.key === 'Escape') {
+      onClose();
+    }
   };
   if (form) {
     form.reset();
   }
-  document.addEventListener('keydown',(evt) => {
-    if (evt.key === 'Escape') {
-      closeMessage(document,'keydown',messageToClose);
-    }
-  });
-  document.body.addEventListener('click',() => {
-    closeMessage(document.body,'click',messageToClose);
-  });
+  document.addEventListener('keydown',onKeyPress);
+  document.body.addEventListener('click',onClose);
 };
 
-export { getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArrayQuantity, getRandomArrayItems, createFetch, createSend, showAlert, onMessageClose };
+export { getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArrayQuantity, getRandomArrayItems, createFetch, createSend, showAlert, closeMessage };
