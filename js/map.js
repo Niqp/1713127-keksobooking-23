@@ -1,6 +1,6 @@
 import { fetchCards } from './generate-cards.js';
 import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove, filterPins, mapFilters }  from './form.js';
-import { getRandomArrayItems, showAlert, debounce, DEBOUNCE_DELAY } from './utils.js';
+import { getRandomArrayItems, showAlert, debounce } from './utils.js';
 
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
@@ -109,7 +109,7 @@ const enablePinFiltering = (generatedCards) => {
 
   const onFilterChange = debounce(() => {
     generatePins(generatedCards);
-  }, DEBOUNCE_DELAY );
+  });
 
   generatePins(generatedCards);
   mapFilters.addEventListener('change',onFilterChange);

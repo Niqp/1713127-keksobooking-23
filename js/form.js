@@ -79,18 +79,18 @@ const filterByFeatures = (cards,features) => {
 };
 
 const filterPins = (cards) => {
-  let filteredCards = cards;
+  const filteredCards = cards;
   const enabledFeatures = new Array;
   mapFeatures.forEach((value) => {
     if (value.checked === true) {
       enabledFeatures.push(value);
     }
   });
-  filteredCards = filterByType(filteredCards,filterType,'type');
-  filteredCards = filterByPrice(filteredCards,filterPrice,'price');
-  filteredCards = filterByType(filteredCards,filterRooms,'rooms');
-  filteredCards = filterByType(filteredCards,filterGuests,'guests');
-  filteredCards = filterByFeatures(filteredCards,enabledFeatures);
-  return filteredCards;
+  const cardsByType = filterByType(filteredCards,filterType,'type');
+  const cardsByPrice = filterByPrice(cardsByType,filterPrice,'price');
+  const cardsByRooms = filterByType(cardsByPrice,filterRooms,'rooms');
+  const cardsByGuests = filterByType(cardsByRooms,filterGuests,'guests');
+  const cardsByFeatures = filterByFeatures(cardsByGuests,enabledFeatures);
+  return cardsByFeatures;
 };
 export { formToggle, filterToggle, appendAddressToForm, filterPins, mapFilters, adForm, DEFAULT_LOCATION };

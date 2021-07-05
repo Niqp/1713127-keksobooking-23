@@ -99,12 +99,12 @@ const closeCurrentMessage = (messageToClose,form) => {
   document.body.addEventListener('click',onClick);
 };
 
-function debounce (callback, timeoutDelay) {
+function debounce (callback) {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+    timeoutId = setTimeout(() => callback.apply(this, rest), DEBOUNCE_DELAY);
   };
 }
 
-export {getRandomArrayItems, createFetch, createSend, showAlert, closeCurrentMessage, debounce, DEBOUNCE_DELAY };
+export {getRandomArrayItems, createFetch, createSend, showAlert, closeCurrentMessage, debounce };
