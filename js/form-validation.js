@@ -1,8 +1,11 @@
 import { adForm } from './form.js';
-import { createSend, closeMessage } from './utils.js';
+import { createSend, closeCurrentMessage } from './utils.js';
 import { resetMainPin } from './map.js';
 
 const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
+
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
 
 const PRICE_PER_TYPE = {
   'palace': 10000,
@@ -30,6 +33,26 @@ const type = adForm.querySelector('#type');
 const price = adForm.querySelector('#price');
 const timein = adForm.querySelector('#timein');
 const timeout = adForm.querySelector('#timeout');
+
+const fileChooser = adForm.querySelector('.ad-form-header__input');
+const preview = document.querySelector('.ad-form-header__preview img');
+
+const onAvatarChange = () => {
+  const file = fileChooser.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+  if (matches) {
+    const reader = new FileReader();
+    const onReaderLoad = () => {
+      preview.src = reader.result;
+      reader.removeEventListener('load', onReaderLoad);
+    };
+    reader.addEventListener('load', onReaderLoad);
+    reader.readAsDataURL(file);
+  }
+};
+
+fileChooser.addEventListener('change', onAvatarChange);
 
 const disableOptions = (options,values) => {
   options.forEach((option) => {
@@ -78,12 +101,12 @@ adForm.addEventListener('submit', (evt) => {
       document.body.append(message);
       message = document.querySelector('.success');
       resetMainPin();
-      closeMessage(message,adForm);
+      closeCurrentMessage(message,adForm);
     })
     .catch (() => {
       let message = errorTemplate.cloneNode(true);
       document.body.append(message);
       message = document.querySelector('.error');
-      closeMessage(message);
+      closeCurrentMessage(message);
     });
 });

@@ -1,5 +1,6 @@
 import { fetchCards } from './generate-cards.js';
-import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove }  from './form.js';
+import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove, filterPins, mapFilters }  from './form.js';
+import { getRandomArrayItems, showAlert, debounce, DEBOUNCE_DELAY } from './utils.js';
 
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
@@ -17,11 +18,12 @@ const DEFAULT_MAP = {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   zoom: 10,
 };
+const PINS_TO_PLACE = 10;
 
 const loadMap = () => {
   formToggle(false);
   filterToggle(false);
-  const createMap = L.map(DEFAULT_MAP.id)
+  const map = L.map(DEFAULT_MAP.id)
     .on('load', () => {
       formToggle(true);
     })
@@ -35,11 +37,11 @@ const loadMap = () => {
     {
       attribution: DEFAULT_MAP.attribution,
     },
-  ).addTo(createMap);
-  return createMap;
+  ).addTo(map);
+  return map;
 };
 
-const map = loadMap();
+const currentMap = loadMap();
 let mainPinMarker;
 
 const createMainPin = () => {
@@ -60,14 +62,14 @@ const createMainPin = () => {
     },
   );
 
-  mainPinMarker.addTo(map);
+  mainPinMarker.addTo(currentMap);
 
   mainPinMarker.on('moveend', onMainPinMove);
 };
 
-const markerGroup = L.layerGroup().addTo(map);
+const markerGroup = L.layerGroup().addTo(currentMap);
 
-const createPin = (point,index,generatedCards) => {
+const createPin = (point,generatedCards) => {
   const {lat, lng} = point.location;
   const icon = L.icon({
     iconUrl: DEFAULT_PIN.icon,
@@ -86,26 +88,46 @@ const createPin = (point,index,generatedCards) => {
   marker
     .addTo(markerGroup)
     .bindPopup(
-      generatedCards[index],
+      generatedCards,
       {
         keepInView: true,
       },
     );
 };
 
-const generatePins = ({cards, generatedCards}) => {
+const enablePinFiltering = (generatedCards) => {
   filterToggle(true);
-  cards.forEach((element,index) => {
-    createPin(element,index, generatedCards);
-  });
+
+  const generatePins = (currentGeneratedCards) => {
+    markerGroup.clearLayers();
+    const filteredCards = filterPins(currentGeneratedCards);
+    const randomCards = getRandomArrayItems(filteredCards,PINS_TO_PLACE,false);
+    randomCards.forEach((element) => {
+      createPin(element.data,element.html);
+    });
+  };
+
+  const onFilterChange = debounce(() => {
+    generatePins(generatedCards);
+  }, DEBOUNCE_DELAY );
+
+  generatePins(generatedCards);
+  mapFilters.addEventListener('change',onFilterChange);
 };
+
 
 const resetMainPin = () => {
   mainPinMarker.setLatLng(DEFAULT_LOCATION);
 };
 
-
 createMainPin();
-fetchCards().then(generatePins);
+
+fetchCards()
+  .then(enablePinFiltering)
+  .catch(() => {
+    const errorText = 'Ошибка загрузки обьявлений с сервера!';
+    showAlert(errorText);
+  });
+
 
 export { resetMainPin };
