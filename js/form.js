@@ -1,11 +1,25 @@
+import { shuffle } from './utils.js';
+
 const DEFAULT_FIXED_POINT = 5;
+const CARDS_TO_FILTER = 10;
 const DEFAULT_LOCATION = {
   lat: 35.6895,
   lng: 139.692,
 };
+const CARD_FEATURES = {
+  any: 'any',
+  type: 'type',
+  price: 'price',
+  rooms: 'rooms',
+  guests: 'guests',
+
+};
 const PRICE_TYPES = {
   low: 10000,
   high: 50000,
+  lowOption: 'low',
+  middleOption: 'middle',
+  highOption: 'high',
 };
 
 const adForm = document.querySelector('.ad-form');
@@ -51,46 +65,40 @@ const appendAddressToForm = (evt) => {
   formAddress.value = `${lat}, ${lng}`;
 };
 
-const filterByType = (cards,filter,cardValue) => {
-  cards = cards.filter((element) => {
-    const string = String(element.data.offer[cardValue]);
-    return filter.value !== 'any' ? filter.value === string : true;
-  });
-  return cards;
+const checkFeature = (card,filter,cardValue) => {
+  const string = String(card.data.offer[cardValue]);
+  return filter.value === CARD_FEATURES.any || filter.value === string;
 };
 
-const filterByPrice = (cards,filter,cardValue) => {
-  cards = cards.filter((element) => {
-    if (filter.value !== 'any') {
-      const value = element.data.offer[cardValue];
-      if (filter.value === 'middle') { return value >= PRICE_TYPES.low && value <= PRICE_TYPES.high;}
-      if (filter.value === 'low') { return value <= PRICE_TYPES.low;}
-      if (filter.value === 'high') { return value >= PRICE_TYPES.high;}
-    } else {return true;}
-  });
-  return cards;
+const checkPrice = (cards,filter,cardValue) => {
+  const value = cards.data.offer[cardValue];
+  switch(filter.value) {
+    case PRICE_TYPES.middleOption: return value >= PRICE_TYPES.low && value <= PRICE_TYPES.high;
+    case PRICE_TYPES.lowOption: return value <= PRICE_TYPES.low;
+    case PRICE_TYPES.highOption: return value >= PRICE_TYPES.high;
+    case CARD_FEATURES.any:
+    default: return true;
+  }
 };
 
-const filterByFeatures = (cards,features) => {
-  features.forEach((feature) => {
-    cards = cards.filter((element) => element.data.offer.features !== undefined ? element.data.offer.features.some((value) => value === feature.value) : false);
-  });
-  return cards;
+const checkFeatures = (card,features) => {
+  const cardFeatures = card.data.offer.features;
+  return features.every((feature) => cardFeatures !== undefined && cardFeatures.some((value) => value === feature.value));
 };
 
 const filterPins = (cards) => {
-  const filteredCards = cards;
-  const enabledFeatures = new Array;
-  mapFeatures.forEach((value) => {
-    if (value.checked === true) {
-      enabledFeatures.push(value);
+  const shuffledCards = cards.slice();
+  shuffle(shuffledCards);
+  const enabledFeatures = Array.from(mapFilters.querySelectorAll('.map__checkbox:checked'));
+  const filteredCards = new Array;
+  for (let index = 0; index<cards.length; index++) {
+    const card = shuffledCards[index];
+    if (checkFeature(card,filterType,CARD_FEATURES.type) && checkPrice(card,filterPrice,CARD_FEATURES.price) && checkFeature(card,filterRooms,CARD_FEATURES.rooms)
+    && checkFeature(card,filterGuests,CARD_FEATURES.guests) && checkFeatures(card,enabledFeatures)) {
+      filteredCards.push(card);
+      if (filteredCards.length >= CARDS_TO_FILTER) { return filteredCards; }
     }
-  });
-  const cardsByType = filterByType(filteredCards,filterType,'type');
-  const cardsByPrice = filterByPrice(cardsByType,filterPrice,'price');
-  const cardsByRooms = filterByType(cardsByPrice,filterRooms,'rooms');
-  const cardsByGuests = filterByType(cardsByRooms,filterGuests,'guests');
-  const cardsByFeatures = filterByFeatures(cardsByGuests,enabledFeatures);
-  return cardsByFeatures;
+  }
+  return filteredCards;
 };
 export { formToggle, filterToggle, appendAddressToForm, filterPins, mapFilters, adForm, DEFAULT_LOCATION };

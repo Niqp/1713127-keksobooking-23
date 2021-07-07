@@ -75,14 +75,7 @@ const fetchCards = () =>
   createFetch(CARDS_SERVER)
     .then((cards) => {
       const generatedCards = generateCards(cards);
-      const combinedCards = [];
-      cards.forEach((value,index) => {
-        value = {
-          data:value,
-          html:generatedCards[index],
-        };
-        combinedCards.push(value);
-      });
+      const combinedCards = cards.map((value,index) => ({data: value, html: generatedCards[index]}));
       return combinedCards;
     });
 

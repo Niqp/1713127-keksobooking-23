@@ -2,35 +2,6 @@ const ALERT_SHOW_TIME = 5000;
 const ALERT_ANIMATION_DELAY = 500;
 const DEBOUNCE_DELAY = 500;
 
-const getRandomInteger = (min, max) => {
-  const lower = Math.min(Math.abs(min), Math.abs(max));
-  const upper = Math.max(Math.abs(min), Math.abs(max));
-  return Math.floor(Math.random() * (upper - lower + 1)) + lower;
-};
-
-const getRandomArrayItems = (items,itemQuantity,deleteFromOriginal) => {
-  if (items.length === 0) {
-    return [];
-  }
-
-  itemQuantity=Math.abs(itemQuantity);
-  const itemsRemaining = items.slice();
-  const deleteFromArray = () => {
-    const arrayToDeleteFrom =  deleteFromOriginal ? items : itemsRemaining;
-    const itemSeed = getRandomInteger(0,arrayToDeleteFrom.length-1);
-    const currentItem = arrayToDeleteFrom[itemSeed];
-    arrayToDeleteFrom.splice(itemSeed,1);
-    return currentItem;
-  };
-
-  if (itemQuantity === 1) {
-    return [deleteFromArray()];
-  }
-  itemQuantity = itemQuantity>items.length ? items.length: itemQuantity;
-  const data = new Array(itemQuantity).fill(null).map(deleteFromArray);
-  return data;
-};
-
 const createFetch = (link) => fetch(link)
   .then((response) => {
     if (response.ok) {
@@ -77,21 +48,19 @@ const showAlert = (message) => {
 };
 
 const closeCurrentMessage = (messageToClose,form) => {
-  let onKeyPress = null;
-  let onClick = null;
   const closeMessage = () => {
     messageToClose.remove();
     document.removeEventListener('keydown',onKeyPress);
     document.body.removeEventListener('click',onClick);
   };
-  onKeyPress = (evt) => {
+  function onKeyPress (evt) {
     if (evt.key === 'Escape') {
       closeMessage();
     }
-  };
-  onClick = () => {
+  }
+  function onClick () {
     closeMessage();
-  };
+  }
   if (form) {
     form.reset();
   }
@@ -99,12 +68,19 @@ const closeCurrentMessage = (messageToClose,form) => {
   document.body.addEventListener('click',onClick);
 };
 
-function debounce (callback) {
+const debounce = (callback) => {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback.apply(this, rest), DEBOUNCE_DELAY);
   };
-}
+};
 
-export {getRandomArrayItems, createFetch, createSend, showAlert, closeCurrentMessage, debounce };
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+};
+
+export { createFetch, createSend, showAlert, closeCurrentMessage, debounce, shuffle };

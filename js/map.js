@@ -1,6 +1,6 @@
 import { fetchCards } from './generate-cards.js';
 import { DEFAULT_LOCATION, formToggle, filterToggle, appendAddressToForm as onMainPinMove, filterPins, mapFilters }  from './form.js';
-import { getRandomArrayItems, showAlert, debounce } from './utils.js';
+import { showAlert, debounce } from './utils.js';
 
 const DEFAULT_MAIN_PIN = {
   size: [52, 52],
@@ -18,7 +18,6 @@ const DEFAULT_MAP = {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   zoom: 10,
 };
-const PINS_TO_PLACE = 10;
 
 const loadMap = () => {
   formToggle(false);
@@ -101,8 +100,7 @@ const enablePinFiltering = (generatedCards) => {
   const generatePins = (currentGeneratedCards) => {
     markerGroup.clearLayers();
     const filteredCards = filterPins(currentGeneratedCards);
-    const randomCards = getRandomArrayItems(filteredCards,PINS_TO_PLACE,false);
-    randomCards.forEach((element) => {
+    filteredCards.forEach((element) => {
       createPin(element.data,element.html);
     });
   };
