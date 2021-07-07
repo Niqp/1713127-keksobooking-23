@@ -1,4 +1,4 @@
-import { createFetch, showAlert } from './utils.js';
+import { createFetch } from './utils.js';
 
 const FLAT_TYPES_TEXT = {
   palace : 'Дворец',
@@ -15,7 +15,7 @@ const replaceText = (place,selector,data) => {
   if (data) {
     currentPlace.textContent = data;
   } else {
-    currentPlace.remove;
+    currentPlace.remove();
   }
 };
 
@@ -75,12 +75,8 @@ const fetchCards = () =>
   createFetch(CARDS_SERVER)
     .then((cards) => {
       const generatedCards = generateCards(cards);
-      return { cards,generatedCards };
-    })
-    .catch(() => {
-      const errorText = 'Ошибка загрузки обьявлений с сервера!';
-      showAlert(errorText);
-      throw new Error(errorText);
+      const combinedCards = cards.map((value,index) => ({data: value, html: generatedCards[index]}));
+      return combinedCards;
     });
 
 export { fetchCards };

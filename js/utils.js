@@ -1,40 +1,6 @@
 const ALERT_SHOW_TIME = 5000;
 const ALERT_ANIMATION_DELAY = 500;
-
-const getRandomInteger = (min, max) => {
-  const lower = Math.min(Math.abs(min), Math.abs(max));
-  const upper = Math.max(Math.abs(min), Math.abs(max));
-  return Math.floor(Math.random() * (upper - lower + 1)) + lower;
-};
-
-const getRandomFloat = (min, max, precision) => {
-  const lower = Math.min(Math.abs(min), Math.abs(max));
-  const upper = Math.max(Math.abs(min), Math.abs(max));
-  return parseFloat((Math.random() * (upper - lower) + lower).toFixed(precision));
-};
-
-const getRandomArrayElement = (elements) => elements[getRandomInteger(0,elements.length - 1)];
-const getRandomArrayQuantity = (elements) => getRandomInteger(1,elements.length);
-
-const getRandomArrayItems = (items,itemQuantity,deleteFromOriginal) => {
-  if (items.length === 0) {
-    throw new Error('Массив пустой!');
-  }
-  itemQuantity=Math.abs(itemQuantity);
-  const itemsRemaining = items.slice();
-  const deleteFromArray = () => {
-    const arrayToDeleteFrom =  deleteFromOriginal?items:itemsRemaining;
-    const itemSeed = getRandomInteger(0,arrayToDeleteFrom.length-1);
-    const currentItem = arrayToDeleteFrom[itemSeed];
-    arrayToDeleteFrom.splice(itemSeed,1);
-    return currentItem;
-  };
-  if (itemQuantity === 1) {
-    return [deleteFromArray()];
-  }
-  const data = new Array(itemQuantity).fill(null).map(deleteFromArray);
-  return data;
-};
+const DEBOUNCE_DELAY = 500;
 
 const createFetch = (link) => fetch(link)
   .then((response) => {
@@ -81,23 +47,40 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
-const closeMessage = (messageToClose,form) => {
-  let onKeyPress = null;
-  const onClose = () => {
+const closeCurrentMessage = (messageToClose,form) => {
+  const closeMessage = () => {
     messageToClose.remove();
     document.removeEventListener('keydown',onKeyPress);
-    document.body.removeEventListener('click',onClose);
+    document.body.removeEventListener('click',onClick);
   };
-  onKeyPress = (evt) => {
+  function onKeyPress (evt) {
     if (evt.key === 'Escape') {
-      onClose();
+      closeMessage();
     }
-  };
+  }
+  function onClick () {
+    closeMessage();
+  }
   if (form) {
     form.reset();
   }
   document.addEventListener('keydown',onKeyPress);
-  document.body.addEventListener('click',onClose);
+  document.body.addEventListener('click',onClick);
 };
 
-export { getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArrayQuantity, getRandomArrayItems, createFetch, createSend, showAlert, closeMessage };
+const debounce = (callback) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), DEBOUNCE_DELAY);
+  };
+};
+
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+};
+
+export { createFetch, createSend, showAlert, closeCurrentMessage, debounce, shuffle };
