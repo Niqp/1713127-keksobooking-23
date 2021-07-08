@@ -48,19 +48,21 @@ const showAlert = (message) => {
 };
 
 const closeCurrentMessage = (messageToClose,form) => {
+  let onKeyPress = null;
+  let onClick = null;
   const closeMessage = () => {
     messageToClose.remove();
     document.removeEventListener('keydown',onKeyPress);
     document.body.removeEventListener('click',onClick);
   };
-  function onKeyPress (evt) {
+  onKeyPress = (evt) => {
     if (evt.key === 'Escape') {
       closeMessage();
     }
-  }
-  function onClick () {
+  };
+  onClick = () => {
     closeMessage();
-  }
+  };
   if (form) {
     form.reset();
   }
@@ -68,13 +70,13 @@ const closeCurrentMessage = (messageToClose,form) => {
   document.body.addEventListener('click',onClick);
 };
 
-const debounce = (callback) => {
+function debounce (callback) {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback.apply(this, rest), DEBOUNCE_DELAY);
   };
-};
+}
 
 const shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
