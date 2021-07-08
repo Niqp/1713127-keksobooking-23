@@ -73,11 +73,11 @@ const checkFeature = (card,filter,cardValue) => {
 const checkPrice = (cards,filter,cardValue) => {
   const value = cards.data.offer[cardValue];
   switch(filter.value) {
-    case PRICE_TYPES.middleOption: return value >= PRICE_TYPES.low && value <= PRICE_TYPES.high;
-    case PRICE_TYPES.lowOption: return value <= PRICE_TYPES.low;
-    case PRICE_TYPES.highOption: return value >= PRICE_TYPES.high;
+    case PRICE_TYPES.middleOption: {return value >= PRICE_TYPES.low && value <= PRICE_TYPES.high;}
+    case PRICE_TYPES.lowOption: {return value <= PRICE_TYPES.low;}
+    case PRICE_TYPES.highOption: {return value >= PRICE_TYPES.high;}
     case CARD_FEATURES.any:
-    default: return true;
+    default: {return true;}
   }
 };
 
