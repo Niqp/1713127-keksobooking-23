@@ -10,6 +10,8 @@ const FLAT_TYPES_TEXT = {
 
 const CARDS_SERVER = 'https://23.javascript.pages.academy/keksobooking/data';
 
+const cardTemplate = document.querySelector('#card').content;
+
 const replaceText = (place,selector,data) => {
   const currentPlace = place.querySelector(selector);
   if (data) {
@@ -51,7 +53,6 @@ const replaceFeatures = (place,item) => {
 };
 
 const generateCards = (data) => {
-  const cardTemplate = document.querySelector('#card').content;
   const cardPopup = cardTemplate.querySelector('.popup');
   const cards = data.map((item) => {
     const card = cardPopup.cloneNode(true);

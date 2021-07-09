@@ -47,13 +47,16 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
-const closeCurrentMessage = (messageToClose,form) => {
+const closeCurrentMessage = (messageToClose,form,button) => {
   let onKeyPress = null;
   let onClick = null;
   const closeMessage = () => {
     messageToClose.remove();
     document.removeEventListener('keydown',onKeyPress);
     document.body.removeEventListener('click',onClick);
+    if (button) {
+      button.removeEventListener('click', onClick);
+    }
   };
   onKeyPress = (evt) => {
     if (evt.key === 'Escape') {
@@ -68,6 +71,10 @@ const closeCurrentMessage = (messageToClose,form) => {
   }
   document.addEventListener('keydown',onKeyPress);
   document.body.addEventListener('click',onClick);
+  if (button) {
+    button.addEventListener('click', onClick);
+    button.focus();
+  }
 };
 
 function debounce (callback) {
