@@ -94,25 +94,29 @@ const createPin = (point,generatedCards) => {
     );
 };
 
+let fetchedData = [];
+
+const generatePins = (currentGeneratedCards) => {
+  markerGroup.clearLayers();
+  const filteredCards = filterPins(currentGeneratedCards);
+  filteredCards.forEach((element) => {
+    createPin(element.data,element.html);
+  });
+};
+
+const generateMarkers = () => {
+  generatePins(fetchedData);
+};
+
 const enablePinFiltering = (generatedCards) => {
+  fetchedData = generatedCards;
   filterToggle(true);
-
-  const generatePins = (currentGeneratedCards) => {
-    markerGroup.clearLayers();
-    const filteredCards = filterPins(currentGeneratedCards);
-    filteredCards.forEach((element) => {
-      createPin(element.data,element.html);
-    });
-  };
-
   const onFilterChange = debounce(() => {
     generatePins(generatedCards);
   });
-
   generatePins(generatedCards);
   mapFilters.addEventListener('change',onFilterChange);
 };
-
 
 const resetMainPin = () => {
   mainPinMarker.setLatLng(DEFAULT_LOCATION);
@@ -127,5 +131,4 @@ fetchCards()
     showAlert(errorText);
   });
 
-
-export { resetMainPin };
+export { currentMap, resetMainPin, generateMarkers };
