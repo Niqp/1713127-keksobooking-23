@@ -1,4 +1,4 @@
-import { adForm } from './form.js';
+import { adForm, mapFilters } from './form.js';
 import { createSend, closeCurrentMessage } from './utils.js';
 import { resetMainPin } from './map.js';
 
@@ -6,6 +6,7 @@ const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
 
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
+const TITLE_MIN_LENGTH = 30;
 
 const PRICE_PER_TYPE = {
   'palace': 10000,
@@ -26,6 +27,9 @@ const resetButton = document.querySelector('.ad-form__reset');
 const successTemplate = document.querySelector('#success').content;
 const errorTemplate = document.querySelector('#error').content;
 
+const adFormElements = adForm.querySelectorAll('.ad-form__element input, .ad-form__element select');
+
+const title = adForm.querySelector('#title');
 const rooms = adForm.querySelector('#room_number');
 const capacity = adForm.querySelector('#capacity');
 const capacityOptions = capacity.querySelectorAll('option');
@@ -33,6 +37,8 @@ const type = adForm.querySelector('#type');
 const price = adForm.querySelector('#price');
 const timein = adForm.querySelector('#timein');
 const timeout = adForm.querySelector('#timeout');
+
+const priceDefault = price.placeholder;
 
 const avatarChooser = adForm.querySelector('.ad-form-header__input');
 const avatarPreview = adForm.querySelector('.ad-form-header__preview img');
@@ -83,13 +89,24 @@ const disableOptions = (options,values) => {
   });
 };
 
+
 const checkOptionsValidity = (form,values) => {
-  form.setCustomValidity(values.includes(Number(form.value)) ? '' : 'Выберите доступное значение!');
+  const check = values.includes(Number(form.value));
+  check ? form.style.border = '' : form.style.border = '2px solid red';
+  form.setCustomValidity( check ? '' : 'Выберите доступное значение!');
 };
 
-const checkPriceValidity = (form,value) => {
+const checkLengthValidity = (form,value) => {
+  const check = value<=form.value.length;
+  check ? form.style.border = '' : form.style.border = '2px solid red';
+  form.setCustomValidity(check ? '' : `Длина текста должна быть не меньше ${value}!`);
+};
+
+const checkNumberValidity = (form,value) => {
   form.placeholder = value;
-  form.setCustomValidity(value<=Number(form.value) ? '' : `Значение должно быть не меньше ${value}!`);
+  const check = value<=Number(form.value);
+  check ? form.style.border = '' : form.style.border = '2px solid red';
+  form.setCustomValidity(check ? '' : `Значение должно быть не меньше ${value}!`);
 };
 
 const setOptionsValidity = (options,validOptions,formToCheck) => {
@@ -101,8 +118,9 @@ const setSameValue = (changedForm, formToSet) => {
   formToSet.value = changedForm.value;
 };
 
-type.addEventListener('change', () => checkPriceValidity(price,PRICE_PER_TYPE[type.value]));
-price.addEventListener('change', () => checkPriceValidity(price,PRICE_PER_TYPE[type.value]));
+title.addEventListener('change', () => checkLengthValidity(title,TITLE_MIN_LENGTH));
+type.addEventListener('change', () => checkNumberValidity(price,PRICE_PER_TYPE[type.value]));
+price.addEventListener('change', () => checkNumberValidity(price,PRICE_PER_TYPE[type.value]));
 
 timein.addEventListener('change', () => setSameValue(timein,timeout));
 timeout.addEventListener('change', () => setSameValue(timeout,timein));
@@ -113,6 +131,9 @@ capacity.addEventListener('change', () => checkOptionsValidity(capacity,ROOMS_CA
 
 const resetForm = () => {
   resetMainPin();
+  mapFilters.reset();
+  price.placeholder = priceDefault;
+  adFormElements.forEach((element) => element.style.border = '');
   avatarPreview.src = avatarDefaultPreview;
   formPhotoPreview.src = avatarDefaultPreview;
 };
@@ -126,16 +147,16 @@ adForm.addEventListener('submit', (evt) => {
   const formData = new FormData(adForm);
   createSend(FORM_SERVER,formData)
     .then(() => {
-      let message = successTemplate.cloneNode(true);
+      const message = successTemplate.cloneNode(true).querySelector('.success');
       document.body.append(message);
-      message = document.querySelector('.success');
+
       resetForm();
       closeCurrentMessage(message,adForm);
     })
     .catch (() => {
-      let message = errorTemplate.cloneNode(true);
+      const message = errorTemplate.cloneNode(true).querySelector('.error');
       document.body.append(message);
-      message = document.querySelector('.error');
-      closeCurrentMessage(message);
+      const button = message.querySelector('.error__button');
+      closeCurrentMessage(message,false,button);
     });
 });
