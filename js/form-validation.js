@@ -1,6 +1,6 @@
 import { adForm, mapFilters } from './form.js';
 import { createSend, closeCurrentMessage } from './utils.js';
-import { resetMainPin } from './map.js';
+import { currentMap, resetMainPin, generateMarkers } from './map.js';
 
 const FORM_SERVER = 'https://23.javascript.pages.academy/keksobooking';
 
@@ -131,7 +131,9 @@ capacity.addEventListener('change', () => checkOptionsValidity(capacity,ROOMS_CA
 
 const resetForm = () => {
   resetMainPin();
+  currentMap.closePopup();
   mapFilters.reset();
+  generateMarkers();
   price.placeholder = priceDefault;
   adFormElements.forEach((element) => element.style.border = '');
   avatarPreview.src = avatarDefaultPreview;
@@ -149,7 +151,6 @@ adForm.addEventListener('submit', (evt) => {
     .then(() => {
       const message = successTemplate.cloneNode(true).querySelector('.success');
       document.body.append(message);
-
       resetForm();
       closeCurrentMessage(message,adForm);
     })
